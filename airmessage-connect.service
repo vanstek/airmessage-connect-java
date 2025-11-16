@@ -1,0 +1,50 @@
+[Unit]
+Description=AirMessage Connect WebSocket Server
+Documentation=https://github.com/airmessage/airmessage-connect-java
+After=network.target
+
+[Service]
+Type=simple
+
+# Run as dedicated user (create with: sudo useradd -r -s /bin/false airmessage)
+# For testing, you can change this to your username
+User=airmessage
+Group=airmessage
+
+# Working directory - adjust to where you've installed the JAR
+WorkingDirectory=/opt/airmessage-connect
+
+# Command to run
+# For production with Firebase authentication:
+#ExecStart=/usr/bin/java -jar /opt/airmessage-connect/airmessage-connect.jar insecure
+# For testing without authentication:
+ExecStart=/usr/bin/java -jar /opt/airmessage-connect/airmessage-connect.jar insecure unlinked
+
+# Environment variables
+# Uncomment and set these for production with Firebase:
+#Environment="GOOGLE_APPLICATION_CREDENTIALS=/opt/airmessage-connect/firebase-key.json"
+
+# If running with SSL directly (not behind reverse proxy):
+#Environment="SERVER_CERTIFICATE=/opt/airmessage-connect/certificate.pem"
+
+# Restart policy
+Restart=on-failure
+RestartSec=10
+StartLimitInterval=60
+StartLimitBurst=3
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=airmessage-connect
+
+# Security settings (optional but recommended)
+# Uncomment these for additional security hardening
+#NoNewPrivileges=true
+#PrivateTmp=true
+#ProtectSystem=strict
+#ProtectHome=true
+#ReadWritePaths=/opt/airmessage-connect/logs
+
+[Install]
+WantedBy=multi-user.target
