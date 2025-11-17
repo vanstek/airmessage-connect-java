@@ -1,0 +1,52 @@
+# Caddy configuration for AirMessage Connect
+# File: /etc/caddy/Caddyfile or add to existing Caddyfile
+
+# Caddy automatically handles SSL certificates via Let's Encrypt
+# This is the simplest configuration option
+
+airmessage.vanstek.dev {
+    # Reverse proxy to AirMessage Connect
+    reverse_proxy localhost:1259 {
+        # WebSocket transport
+        transport http {
+            # Keep connections alive
+            keepalive 30s
+            keepalive_idle_conns 10
+        }
+        
+        # Headers
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+    
+    # Logging
+    log {
+        output file /var/log/caddy/airmessage-connect.log
+        format json
+    }
+    
+    # Security headers (Caddy adds many by default)
+    header {
+        # Enable HSTS
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+        
+        # Prevent clickjacking
+        X-Frame-Options "DENY"
+        
+        # Prevent MIME type sniffing
+        X-Content-Type-Options "nosniff"
+        
+        # XSS Protection
+        X-XSS-Protection "1; mode=block"
+        
+        # Remove server header
+        -Server
+    }
+}
+
+# Alternative minimal configuration:
+# airmessage.vanstek.dev {
+#     reverse_proxy localhost:1259
+# }

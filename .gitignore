@@ -207,3 +207,4 @@ gradle-app.setting
 
 # Run working directory
 /run/
+.env
